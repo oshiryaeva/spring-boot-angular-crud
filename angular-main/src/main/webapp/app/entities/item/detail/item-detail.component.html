@@ -1,0 +1,62 @@
+<div class="row justify-content-center">
+  <div class="col-8">
+    <div *ngIf="item">
+      <h2 data-cy="itemDetailsHeading"><span>Item</span></h2>
+
+      <hr />
+
+      <wyrgorod-alert-error></wyrgorod-alert-error>
+
+      <wyrgorod-alert></wyrgorod-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span>ID</span></dt>
+        <dd>
+          <span>{{ item.id }}</span>
+        </dd>
+        <dt><span>Title</span></dt>
+        <dd>
+          <span>{{ item.title }}</span>
+        </dd>
+        <dt><span>Description</span></dt>
+        <dd>
+          <span>{{ item.description }}</span>
+        </dd>
+        <dt><span>Price</span></dt>
+        <dd>
+          <span>{{ item.price }}</span>
+        </dd>
+        <dt><span>Medium</span></dt>
+        <dd>
+          <span>{{ item.medium }}</span>
+        </dd>
+        <dt><span>Artist</span></dt>
+        <dd>
+          <div *ngIf="item.artist">
+            <a [routerLink]="['/artist', item.artist?.id, 'view']">{{ item.artist?.id }}</a>
+          </div>
+        </dd>
+        <dt><span>Publisher</span></dt>
+        <dd>
+          <div *ngIf="item.publisher">
+            <a [routerLink]="['/publisher', item.publisher?.id, 'view']">{{ item.publisher?.id }}</a>
+          </div>
+        </dd>
+        <dt><span>Image</span></dt>
+        <dd>
+          <div *ngIf="item.image">
+            <a [routerLink]="['/image', item.image?.id, 'view']">{{ item.image?.id }}</a>
+          </div>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/item', item.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,97 @@
+@import '~bootstrap/scss/mixins/breakpoints';
+@import '~@nebular/theme/styles/global/breakpoints';
+@import '../../../themes';
+
+@include nb-install-component() {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+
+  .sidebar-toggle {
+    @include nb-ltr(padding-right, 1.25rem);
+    @include nb-rtl(padding-left, 1.25rem);
+    text-decoration: none;
+    color: nb-theme(text-hint-color);
+    nb-icon {
+      font-size: 1.75rem;
+    }
+  }
+
+  .logo-container {
+    display: flex;
+    align-items: center;
+    width: calc(#{nb-theme(sidebar-width)} - #{nb-theme(header-padding)});
+  }
+
+  .avatar-user {
+    margin-left: -43px;
+  }
+
+  .logo img {
+    margin: 10px;
+    height: 40px;
+  }
+
+  .header-container {
+    display: flex;
+    align-items: center;
+    width: auto;
+
+    .sidebar-toggle {
+      @include nb-ltr(padding-right, 1.25rem);
+      @include nb-rtl(padding-left, 1.25rem);
+      text-decoration: none;
+      color: nb-theme(text-hint-color);
+      nb-icon {
+        font-size: 1.75rem;
+      }
+    }
+
+    .logo {
+      padding: 0 1.25rem;
+      font-size: 1.75rem;
+      /*@include nb-ltr(border-left, 1px solid nb-theme(divider-color));
+      @include nb-rtl(border-right, 1px solid nb-theme(divider-color));*/
+      white-space: nowrap;
+      text-decoration: none;
+    }
+  }
+
+  ::ng-deep .user-picture {
+    border: 1px solid #1a34b8;
+  }
+
+  .avatar-user nb-action {
+    border-right: 2px nb-theme(actions-divider-style) nb-theme(actions-divider-color);
+  }
+
+  nb-actions.size-small nb-action {
+    height: inherit;
+  }
+
+  @media (min-width: 720px) {
+    /*.sg-logo {
+      max-width: 100% !important;
+    }*/
+
+    .eqdom-logo {
+      max-width: 50% !important;
+      margin-right: -15px;
+      margin-top: auto;
+    }
+
+    // .avatar-user {
+    //   max-width: 80% !important;
+    // }
+  }
+
+  @media (max-width: 720px) {
+    .eqdom-logo {
+      max-width: 75% !important;
+    }
+
+    .avatar-user {
+      max-width: 50% !important;
+    }
+  }
+}

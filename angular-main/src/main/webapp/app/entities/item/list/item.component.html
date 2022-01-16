@@ -1,0 +1,106 @@
+<div>
+  <h2 id="page-heading" data-cy="ItemHeading">
+    <span>Items</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info mr-2" (click)="loadPage()" [disabled]="isLoading">
+        <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
+        <span>Refresh List</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-item"
+        [routerLink]="['/item/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span> Create a new Item </span>
+      </button>
+    </div>
+  </h2>
+
+  <div class="alert alert-warning" id="no-result" *ngIf="items?.length === 0">
+    <span>No items found</span>
+  </div>
+
+  <div class="table-responsive" id="entities" *ngIf="items && items.length > 0">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr wyrgorodSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="loadPage()">
+          <th scope="col" wyrgorodSortBy="id"><span>ID</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" wyrgorodSortBy="title"><span>Title</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" wyrgorodSortBy="description"><span>Description</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" wyrgorodSortBy="price"><span>Price</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" wyrgorodSortBy="medium"><span>Medium</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" wyrgorodSortBy="artist.id"><span>Artist</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" wyrgorodSortBy="publisher.id"><span>Publisher</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" wyrgorodSortBy="image.id"><span>Image</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of items; trackBy: trackId" data-cy="entityTable">
+          <td>
+            <a [routerLink]="['/item', item.id, 'view']">{{ item.id }}</a>
+          </td>
+          <td>{{ item.title }}</td>
+          <td>{{ item.description }}</td>
+          <td>{{ item.price }}</td>
+          <td>{{ item.medium }}</td>
+          <td>
+            <div *ngIf="item.artist">
+              <a [routerLink]="['/artist', item.artist?.id, 'view']">{{ item.artist?.id }}</a>
+            </div>
+          </td>
+          <td>
+            <div *ngIf="item.publisher">
+              <a [routerLink]="['/publisher', item.publisher?.id, 'view']">{{ item.publisher?.id }}</a>
+            </div>
+          </td>
+          <td>
+            <div *ngIf="item.image">
+              <a [routerLink]="['/image', item.image?.id, 'view']">{{ item.image?.id }}</a>
+            </div>
+          </td>
+          <td class="text-right">
+            <div class="btn-group">
+              <button type="submit" [routerLink]="['/item', item.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                <fa-icon icon="eye"></fa-icon>
+                <span class="d-none d-md-inline">View</span>
+              </button>
+
+              <button type="submit" [routerLink]="['/item', item.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                <fa-icon icon="pencil-alt"></fa-icon>
+                <span class="d-none d-md-inline">Edit</span>
+              </button>
+
+              <button type="submit" (click)="delete(item)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                <fa-icon icon="times"></fa-icon>
+                <span class="d-none d-md-inline">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="items && items.length > 0">
+    <div class="row justify-content-center">
+      <wyrgorod-item-count [params]="{ page: page, totalItems: totalItems, itemsPerPage: itemsPerPage }"></wyrgorod-item-count>
+    </div>
+
+    <div class="row justify-content-center">
+      <ngb-pagination
+        [collectionSize]="totalItems"
+        [(page)]="ngbPaginationPage"
+        [pageSize]="itemsPerPage"
+        [maxSize]="5"
+        [rotate]="true"
+        [boundaryLinks]="true"
+        (pageChange)="loadPage($event)"
+      ></ngb-pagination>
+    </div>
+  </div>
+</div>

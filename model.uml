@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>com.shiryaeva.wyrgorod.model</OriginalElement>
+  <nodes>
+    <node x="416.125" y="22.0">com.shiryaeva.wyrgorod.model.Artist</node>
+    <node x="210.12499999999997" y="714.0">com.shiryaeva.wyrgorod.model.OrderItem</node>
+    <node x="255.99999999999997" y="963.0">com.shiryaeva.wyrgorod.model.Order</node>
+    <node x="180.12499999999994" y="255.0">com.shiryaeva.wyrgorod.model.Item</node>
+    <node x="0.0" y="22.0">com.shiryaeva.wyrgorod.model.Publisher</node>
+    <node x="258.0" y="0.0">com.shiryaeva.wyrgorod.model.Image</node>
+    <node x="364.125" y="692.0">com.shiryaeva.wyrgorod.model.Customer</node>
+    <node x="401.625" y="321.0">com.shiryaeva.wyrgorod.model.NewsItem</node>
+    <node x="133.0" y="68.0">com.shiryaeva.wyrgorod.model.Medium</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.shiryaeva.wyrgorod.model.Item" target="com.shiryaeva.wyrgorod.model.Image" relationship="DEPENDENCY">
+      <point x="-37.49999999999997" y="-192.5" />
+      <point x="217.62499999999997" y="235.0" />
+      <point x="87.47058823529412" y="235.0" />
+      <point x="87.47058823529412" y="195.0" />
+      <point x="289.0" y="195.0" />
+      <point x="-31.0" y="82.5" />
+    </edge>
+    <edge source="com.shiryaeva.wyrgorod.model.NewsItem" target="com.shiryaeva.wyrgorod.model.Artist" relationship="TO_ONE">
+      <point x="35.5" y="-126.5" />
+      <point x="508.125" y="215.0" />
+      <point x="490.8051470588235" y="215.0" />
+      <point x="490.8051470588235" y="205.0" />
+      <point x="500.875" y="205.0" />
+      <point x="28.25" y="60.5" />
+    </edge>
+    <edge source="com.shiryaeva.wyrgorod.model.Item" target="com.shiryaeva.wyrgorod.model.Artist" relationship="TO_ONE">
+      <point x="37.50000000000006" y="-192.5" />
+      <point x="292.625" y="235.0" />
+      <point x="326.80514705882354" y="235.0" />
+      <point x="326.80514705882354" y="225.0" />
+      <point x="490.8051470588235" y="225.0" />
+      <point x="490.8051470588235" y="205.0" />
+      <point x="500.875" y="205.0" />
+      <point x="28.25" y="60.5" />
+    </edge>
+    <edge source="com.shiryaeva.wyrgorod.model.Order" target="com.shiryaeva.wyrgorod.model.Customer" relationship="DEPENDENCY">
+      <point x="-49.25" y="-104.5" />
+      <point x="305.25" y="942.0" />
+      <point x="272.125" y="942.0" />
+      <point x="272.125" y="932.0" />
+      <point x="397.875" y="932.0" />
+      <point x="-33.75" y="104.5" />
+    </edge>
+    <edge source="com.shiryaeva.wyrgorod.model.Order" target="com.shiryaeva.wyrgorod.model.OrderItem" relationship="TO_MANY">
+      <point x="49.25" y="-104.5" />
+      <point x="403.75" y="942.0" />
+      <point x="436.625" y="942.0" />
+      <point x="436.625" y="922.0" />
+      <point x="310.625" y="922.0" />
+      <point x="33.5" y="82.5" />
+    </edge>
+    <edge source="com.shiryaeva.wyrgorod.model.Item" target="com.shiryaeva.wyrgorod.model.Image" relationship="TO_ONE">
+      <point x="37.50000000000006" y="-192.5" />
+      <point x="292.625" y="235.0" />
+      <point x="326.80514705882354" y="235.0" />
+      <point x="326.80514705882354" y="185.0" />
+      <point x="351.0" y="185.0" />
+      <point x="31.0" y="82.5" />
+    </edge>
+    <edge source="com.shiryaeva.wyrgorod.model.Item" target="com.shiryaeva.wyrgorod.model.Artist" relationship="DEPENDENCY">
+      <point x="-37.49999999999997" y="-192.5" />
+      <point x="217.62499999999997" y="235.0" />
+      <point x="87.47058823529412" y="235.0" />
+      <point x="87.47058823529412" y="205.0" />
+      <point x="480.8051470588235" y="205.0" />
+      <point x="480.8051470588235" y="195.0" />
+      <point x="444.375" y="195.0" />
+      <point x="-28.25" y="60.5" />
+    </edge>
+    <edge source="com.shiryaeva.wyrgorod.model.Order" target="com.shiryaeva.wyrgorod.model.Customer" relationship="TO_ONE">
+      <point x="49.25" y="-104.5" />
+      <point x="403.75" y="942.0" />
+      <point x="436.625" y="942.0" />
+      <point x="436.625" y="922.0" />
+      <point x="465.375" y="922.0" />
+      <point x="33.75" y="104.5" />
+    </edge>
+    <edge source="com.shiryaeva.wyrgorod.model.NewsItem" target="com.shiryaeva.wyrgorod.model.Artist" relationship="DEPENDENCY">
+      <point x="-35.5" y="-126.5" />
+      <point x="437.125" y="215.0" />
+      <point x="480.8051470588235" y="215.0" />
+      <point x="480.8051470588235" y="195.0" />
+      <point x="444.375" y="195.0" />
+      <point x="-28.25" y="60.5" />
+    </edge>
+    <edge source="com.shiryaeva.wyrgorod.model.Item" target="com.shiryaeva.wyrgorod.model.Publisher" relationship="DEPENDENCY">
+      <point x="-37.49999999999997" y="-192.5" />
+      <point x="217.62499999999997" y="235.0" />
+      <point x="87.47058823529412" y="235.0" />
+      <point x="87.47058823529412" y="195.0" />
+      <point x="28.25" y="195.0" />
+      <point x="-28.25" y="60.5" />
+    </edge>
+    <edge source="com.shiryaeva.wyrgorod.model.Item" target="com.shiryaeva.wyrgorod.model.Medium" relationship="TO_ONE">
+      <point x="37.50000000000006" y="-192.5" />
+      <point x="292.625" y="235.0" />
+      <point x="326.80514705882354" y="235.0" />
+      <point x="326.80514705882354" y="185.0" />
+      <point x="211.75" y="185.0" />
+      <point x="26.25" y="14.5" />
+    </edge>
+    <edge source="com.shiryaeva.wyrgorod.model.Order" target="com.shiryaeva.wyrgorod.model.OrderItem" relationship="DEPENDENCY">
+      <point x="-49.25" y="-104.5" />
+      <point x="305.25" y="942.0" />
+      <point x="272.125" y="942.0" />
+      <point x="272.125" y="932.0" />
+      <point x="243.62499999999997" y="932.0" />
+      <point x="-33.5" y="82.5" />
+    </edge>
+    <edge source="com.shiryaeva.wyrgorod.model.OrderItem" target="com.shiryaeva.wyrgorod.model.Item" relationship="DEPENDENCY">
+      <point x="-33.5" y="-82.5" />
+      <point x="243.62499999999997" y="671.0" />
+      <point x="250.12499999999997" y="671.0" />
+      <point x="250.12499999999997" y="661.0" />
+      <point x="217.62499999999994" y="661.0" />
+      <point x="-37.5" y="192.5" />
+    </edge>
+    <edge source="com.shiryaeva.wyrgorod.model.Item" target="com.shiryaeva.wyrgorod.model.Medium" relationship="DEPENDENCY">
+      <point x="-37.49999999999997" y="-192.5" />
+      <point x="217.62499999999997" y="235.0" />
+      <point x="87.47058823529412" y="235.0" />
+      <point x="87.47058823529412" y="195.0" />
+      <point x="159.25" y="195.0" />
+      <point x="-26.25" y="14.5" />
+    </edge>
+    <edge source="com.shiryaeva.wyrgorod.model.OrderItem" target="com.shiryaeva.wyrgorod.model.Item" relationship="TO_ONE">
+      <point x="33.5" y="-82.5" />
+      <point x="310.625" y="671.0" />
+      <point x="292.625" y="671.0" />
+      <point x="37.50000000000006" y="192.5" />
+    </edge>
+    <edge source="com.shiryaeva.wyrgorod.model.Item" target="com.shiryaeva.wyrgorod.model.Publisher" relationship="TO_ONE">
+      <point x="37.50000000000006" y="-192.5" />
+      <point x="292.625" y="235.0" />
+      <point x="326.80514705882354" y="235.0" />
+      <point x="326.80514705882354" y="185.0" />
+      <point x="84.75" y="185.0" />
+      <point x="28.25" y="60.5" />
+    </edge>
+    <edge source="com.shiryaeva.wyrgorod.model.Order" target="com.shiryaeva.wyrgorod.model.Item" relationship="DEPENDENCY">
+      <point x="-49.25" y="-104.5" />
+      <point x="305.25" y="942.0" />
+      <point x="272.125" y="942.0" />
+      <point x="272.125" y="932.0" />
+      <point x="199.62499999999997" y="932.0" />
+      <point x="199.62499999999997" y="671.0" />
+      <point x="250.12499999999997" y="671.0" />
+      <point x="250.12499999999997" y="661.0" />
+      <point x="217.62499999999994" y="661.0" />
+      <point x="-37.5" y="192.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="0.5914429530201343" showDependencies="true" x="272.0" y="586.0" />
+  <SelectedNodes>
+    <node>com.shiryaeva.wyrgorod.model.Medium</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Fields</Category>
+    <Category>Inner Classes</Category>
+    <Category>Properties</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

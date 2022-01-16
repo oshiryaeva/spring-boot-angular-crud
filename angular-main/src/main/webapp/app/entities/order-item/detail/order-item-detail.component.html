@@ -1,0 +1,38 @@
+<div class="row justify-content-center">
+  <div class="col-8">
+    <div *ngIf="orderItem">
+      <h2 data-cy="orderItemDetailsHeading"><span>Order Item</span></h2>
+
+      <hr />
+
+      <wyrgorod-alert-error></wyrgorod-alert-error>
+
+      <wyrgorod-alert></wyrgorod-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span>ID</span></dt>
+        <dd>
+          <span>{{ orderItem.id }}</span>
+        </dd>
+        <dt><span>Quantity</span></dt>
+        <dd>
+          <span>{{ orderItem.quantity }}</span>
+        </dd>
+        <dt><span>Item</span></dt>
+        <dd>
+          <div *ngIf="orderItem.item">
+            <a [routerLink]="['/item', orderItem.item?.id, 'view']">{{ orderItem.item?.id }}</a>
+          </div>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/order-item', orderItem.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+      </button>
+    </div>
+  </div>
+</div>

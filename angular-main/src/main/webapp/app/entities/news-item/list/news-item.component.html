@@ -1,0 +1,102 @@
+<div>
+  <h2 id="page-heading" data-cy="NewsItemHeading">
+    <span>News Items</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info mr-2" (click)="loadPage()" [disabled]="isLoading">
+        <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
+        <span>Refresh List</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-news-item"
+        [routerLink]="['/news-item/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span> Create a new News Item </span>
+      </button>
+    </div>
+  </h2>
+
+  <div class="alert alert-warning" id="no-result" *ngIf="newsItems?.length === 0">
+    <span>No newsItems found</span>
+  </div>
+
+  <div class="table-responsive" id="entities" *ngIf="newsItems && newsItems.length > 0">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr wyrgorodSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="loadPage()">
+          <th scope="col" wyrgorodSortBy="id"><span>ID</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" wyrgorodSortBy="date"><span>Date</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" wyrgorodSortBy="title"><span>Title</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" wyrgorodSortBy="description"><span>Description</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" wyrgorodSortBy="artist.id"><span>Artist</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let newsItem of newsItems; trackBy: trackId" data-cy="entityTable">
+          <td>
+            <a [routerLink]="['/news-item', newsItem.id, 'view']">{{ newsItem.id }}</a>
+          </td>
+          <td>{{ newsItem.date | formatMediumDate }}</td>
+          <td>{{ newsItem.title }}</td>
+          <td>{{ newsItem.description }}</td>
+          <td>
+            <div *ngIf="newsItem.artist">
+              <a [routerLink]="['/artist', newsItem.artist?.id, 'view']">{{ newsItem.artist?.id }}</a>
+            </div>
+          </td>
+          <td class="text-right">
+            <div class="btn-group">
+              <button
+                type="submit"
+                [routerLink]="['/news-item', newsItem.id, 'view']"
+                class="btn btn-info btn-sm"
+                data-cy="entityDetailsButton"
+              >
+                <fa-icon icon="eye"></fa-icon>
+                <span class="d-none d-md-inline">View</span>
+              </button>
+
+              <button
+                type="submit"
+                [routerLink]="['/news-item', newsItem.id, 'edit']"
+                class="btn btn-primary btn-sm"
+                data-cy="entityEditButton"
+              >
+                <fa-icon icon="pencil-alt"></fa-icon>
+                <span class="d-none d-md-inline">Edit</span>
+              </button>
+
+              <button type="submit" (click)="delete(newsItem)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                <fa-icon icon="times"></fa-icon>
+                <span class="d-none d-md-inline">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="newsItems && newsItems.length > 0">
+    <div class="row justify-content-center">
+      <wyrgorod-item-count [params]="{ page: page, totalItems: totalItems, itemsPerPage: itemsPerPage }"></wyrgorod-item-count>
+    </div>
+
+    <div class="row justify-content-center">
+      <ngb-pagination
+        [collectionSize]="totalItems"
+        [(page)]="ngbPaginationPage"
+        [pageSize]="itemsPerPage"
+        [maxSize]="5"
+        [rotate]="true"
+        [boundaryLinks]="true"
+        (pageChange)="loadPage($event)"
+      ></ngb-pagination>
+    </div>
+  </div>
+</div>

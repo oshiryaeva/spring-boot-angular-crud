@@ -1,0 +1,41 @@
+<div class="row justify-content-center">
+  <div class="col-8">
+    <div *ngIf="image">
+      <h2 data-cy="imageDetailsHeading"><span>Image</span></h2>
+
+      <hr />
+
+      <wyrgorod-alert-error></wyrgorod-alert-error>
+
+      <wyrgorod-alert></wyrgorod-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span>ID</span></dt>
+        <dd>
+          <span>{{ image.id }}</span>
+        </dd>
+        <dt><span>Name</span></dt>
+        <dd>
+          <span>{{ image.name }}</span>
+        </dd>
+        <dt><span>Content</span></dt>
+        <dd>
+          <div *ngIf="image.content">
+            <a (click)="openFile(image.content, image.contentContentType)">
+              <img [src]="'data:' + image.contentContentType + ';base64,' + image.content" style="max-width: 100%" alt="image image" />
+            </a>
+            {{ image.contentContentType }}, {{ byteSize(image.content) }}
+          </div>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/image', image.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+      </button>
+    </div>
+  </div>
+</div>

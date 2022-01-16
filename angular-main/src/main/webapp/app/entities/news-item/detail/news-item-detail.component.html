@@ -1,0 +1,46 @@
+<div class="row justify-content-center">
+  <div class="col-8">
+    <div *ngIf="newsItem">
+      <h2 data-cy="newsItemDetailsHeading"><span>News Item</span></h2>
+
+      <hr />
+
+      <wyrgorod-alert-error></wyrgorod-alert-error>
+
+      <wyrgorod-alert></wyrgorod-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span>ID</span></dt>
+        <dd>
+          <span>{{ newsItem.id }}</span>
+        </dd>
+        <dt><span>Date</span></dt>
+        <dd>
+          <span>{{ newsItem.date | formatMediumDate }}</span>
+        </dd>
+        <dt><span>Title</span></dt>
+        <dd>
+          <span>{{ newsItem.title }}</span>
+        </dd>
+        <dt><span>Description</span></dt>
+        <dd>
+          <span>{{ newsItem.description }}</span>
+        </dd>
+        <dt><span>Artist</span></dt>
+        <dd>
+          <div *ngIf="newsItem.artist">
+            <a [routerLink]="['/artist', newsItem.artist?.id, 'view']">{{ newsItem.artist?.id }}</a>
+          </div>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/news-item', newsItem.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+      </button>
+    </div>
+  </div>
+</div>
