@@ -28,20 +28,29 @@ INSERT INTO public.customer (id, first_name, last_name, email)
 VALUES (2, 'Кто-то', 'Другой', 'somebody@to.love');
 
 -- IMAGE data --
+-- INSERT INTO public.image (id, name, content, content_type) VALUES (1, 'Джут', 28171, 'image/jpeg');
+-- INSERT INTO public.image (id, name, content, content_type) VALUES (2, 'Лаокоон', 28172, 'image/jpeg');
+-- INSERT INTO public.image (id, name, content, content_type) VALUES (3, 'Минные поля', 28173, 'image/jpeg');
+-- INSERT INTO public.image (id, name, content, content_type) VALUES (4, 'Часть текста отсутствует', 28174, 'image/jpeg');
+-- INSERT INTO public.image (id, name, content, content_type) VALUES (5, 'Что я видел', 28175, 'image/jpeg');
+-- INSERT INTO public.image (id, name, content, content_type) VALUES (6, 'Таял', 28176, 'image/jpeg');
 
-INSERT INTO public.image (id, name, content, content_type)
-VALUES (1, 'Джут', lo_import('C:\mag\test_automation\term\wyrgorod\src\main\resources\images\1.jpg', 'image/jpeg'));
-INSERT INTO public.image (id, name, content, content_type)
-VALUES (2, 'Лаокоон', lo_import('C:\mag\test_automation\term\wyrgorod\src\main\resources\images\2.jpg', 'image/jpeg'));
-INSERT INTO public.image (id, name, content, content_type)
-VALUES (3, 'Минные поля', lo_import('C:\mag\test_automation\term\wyrgorod\src\main\resources\images\3.jpg', 'image/jpeg'));
-INSERT INTO public.image (id, name, content, content_type)
+
+-- IMAGE data --
+
+INSERT INTO public.image (id, name, content)
+VALUES (1, 'Джут', lo_import('C:\mag\test_automation\term\wyrgorod\src\main\resources\images\1.jpg'));
+INSERT INTO public.image (id, name, content)
+VALUES (2, 'Лаокоон', lo_import('C:\mag\test_automation\term\wyrgorod\src\main\resources\images\2.jpg'));
+INSERT INTO public.image (id, name, content)
+VALUES (3, 'Минные поля', lo_import('C:\mag\test_automation\term\wyrgorod\src\main\resources\images\3.jpg'));
+INSERT INTO public.image (id, name, content)
 VALUES (4, 'Часть текста отсутствует',
-        lo_import('C:\mag\test_automation\term\wyrgorod\src\main\resources\images\4.jpg', 'image/jpeg'));
-INSERT INTO public.image (id, name, content, content_type)
-VALUES (5, 'Что я видел', lo_import('C:\mag\test_automation\term\wyrgorod\src\main\resources\images\5.jpg', 'image/jpeg'));
-INSERT INTO public.image (id, name, content, content_type)
-VALUES (6, 'Таял', lo_import('C:\mag\test_automation\term\wyrgorod\src\main\resources\images\6.jpg', 'image/jpeg'));
+        lo_import('C:\mag\test_automation\term\wyrgorod\src\main\resources\images\4.jpg'));
+INSERT INTO public.image (id, name, content)
+VALUES (5, 'Что я видел', lo_import('C:\mag\test_automation\term\wyrgorod\src\main\resources\images\5.jpg'));
+INSERT INTO public.image (id, name, content)
+VALUES (6, 'Таял', lo_import('C:\mag\test_automation\term\wyrgorod\src\main\resources\images\6.jpg'));
 
 -- ITEM data --
 

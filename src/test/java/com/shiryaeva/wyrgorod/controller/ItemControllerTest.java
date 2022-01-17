@@ -46,6 +46,9 @@ public class ItemControllerTest {
 
     private MockitoSession session;
 
+    private static final String CONTENT_TYPE = "image/jpeg";
+
+
     @BeforeEach
     public void beforeMethod() {
         session = Mockito.mockitoSession()
@@ -205,7 +208,7 @@ public class ItemControllerTest {
         Publisher publisher = new Publisher(1L, "Verve");
         MultipartFile file = new MockMultipartFile("Banana", "Banana.jpg", "text/plain",
                 convertImage("/image/Velvet_Underground_and_Nico.jpg"));
-        Image image = new Image(1l, file.getName(), file.getBytes());
+        Image image = new Image(1l, file.getName(), file.getBytes(), CONTENT_TYPE);
         return new Item(1l, title, description, artist, publisher, BigDecimal.TEN, Medium.CD, image);
     }
 

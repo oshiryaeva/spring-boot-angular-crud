@@ -43,6 +43,8 @@ public class ImageControllerTest {
 
     private MockitoSession session;
 
+    private static final String CONTENT_TYPE = "image/jpeg";
+
     @BeforeEach
     public void beforeMethod() {
         session = Mockito.mockitoSession()
@@ -58,7 +60,7 @@ public class ImageControllerTest {
     @Test
     public void getImageById() throws Exception {
         MultipartFile file = new MockMultipartFile("Banana", "Banana.jpg", "text/plain", convertImage("/image/Velvet_Underground_and_Nico.jpg"));
-        Image image = new Image(1l, file.getName(), file.getBytes());
+        Image image = new Image(1l, file.getName(), file.getBytes(), CONTENT_TYPE);
         Optional<Image> imageOptional = Optional.of(image);
         given(imageRepository.findById(image.getId())).willReturn(imageOptional);
         this.mockMvc.perform(get("/image/1")
