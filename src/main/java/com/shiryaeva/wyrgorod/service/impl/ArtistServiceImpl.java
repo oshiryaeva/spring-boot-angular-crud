@@ -3,7 +3,6 @@ package com.shiryaeva.wyrgorod.service.impl;
 import com.shiryaeva.wyrgorod.model.Artist;
 import com.shiryaeva.wyrgorod.repository.ArtistRepository;
 import com.shiryaeva.wyrgorod.service.ArtistService;
-import com.shiryaeva.wyrgorod.validator.ArtistValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,10 +19,6 @@ public class ArtistServiceImpl implements ArtistService {
     @Autowired
     private ArtistRepository artistRepository;
 
-    @Autowired
-    private ArtistValidator artistValidator;
-
-
     @Override
     public Page<Artist> findAll(Pageable pageable) {
         return artistRepository.findAll(pageable);
@@ -36,13 +31,11 @@ public class ArtistServiceImpl implements ArtistService {
 
     @Override
     public Artist save(Artist artist) {
-        artistValidator.validate(artist);
         return artistRepository.save(artist);
     }
 
     @Override
     public Artist update(Long id, Artist request) {
-        artistValidator.validate(request);
         Artist existingArtist = artistRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         existingArtist.setName(request.getName());
         return artistRepository.save(existingArtist);

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -24,10 +25,11 @@ public class NewsItem {
     @Column(name = "date")
     private Date date;
 
-    @Column(name = "title")
+    @Column(name = "title", nullable = false)
     private String title;
 
     @Lob
+    @Type(type = "org.hibernate.type.TextType")
     @Column(name = "description")
     private String description;
 
@@ -35,4 +37,10 @@ public class NewsItem {
     @JoinColumn(name = "artist_id")
     private Artist artist;
 
+    public NewsItem(Date date, String title, String description, Artist artist) {
+        this.date = date;
+        this.title = title;
+        this.description = description;
+        this.artist = artist;
+    }
 }

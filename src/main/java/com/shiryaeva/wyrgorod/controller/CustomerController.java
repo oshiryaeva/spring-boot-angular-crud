@@ -4,17 +4,14 @@ import com.shiryaeva.wyrgorod.config.HeaderUtil;
 import com.shiryaeva.wyrgorod.config.PaginationUtil;
 import com.shiryaeva.wyrgorod.config.ResponseUtil;
 import com.shiryaeva.wyrgorod.exception.BadRequestAlertException;
+import com.shiryaeva.wyrgorod.exception.MissingMandatoryFieldException;
 import com.shiryaeva.wyrgorod.model.Customer;
-import com.shiryaeva.wyrgorod.model.Customer;
-import com.shiryaeva.wyrgorod.repository.CustomerRepository;
 import com.shiryaeva.wyrgorod.repository.CustomerRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -53,6 +50,11 @@ public class CustomerController {
         if (customer.getId() != null) {
             throw new BadRequestAlertException("A new customer cannot already have an ID", ENTITY_NAME, "idexists");
         }
+        if (customer.getFirstName() == null ||
+                customer.getLastName() == null ||
+                customer.getEmail() == null) {
+            throw new MissingMandatoryFieldException("Fill all mandatory fields please", ENTITY_NAME, "nullfield");
+        }
         Customer result = customerRepository.save(customer);
         return ResponseEntity
                 .created(new URI("/api/customers/" + result.getId()))
@@ -63,7 +65,7 @@ public class CustomerController {
     /**
      * {@code PUT  /customers/:id} : Updates an existing customer.
      *
-     * @param id the id of the customer to save.
+     * @param id       the id of the customer to save.
      * @param customer the customer to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated customer,
      * or with status {@code 400 (Bad Request)} if the customer is not valid,
@@ -94,7 +96,7 @@ public class CustomerController {
     /**
      * {@code PATCH  /customers/:id} : Partial updates given fields of an existing customer, field will ignore if it is null
      *
-     * @param id the id of the customer to save.
+     * @param id       the id of the customer to save.
      * @param customer the customer to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated customer,
      * or with status {@code 400 (Bad Request)} if the customer is not valid,
@@ -102,7 +104,7 @@ public class CustomerController {
      * or with status {@code 500 (Internal Server Error)} if the customer couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/customers/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PatchMapping(value = "/customers/{id}", consumes = {"application/json", "application/merge-patch+json"})
     public ResponseEntity<Customer> partialUpdateCustomer(
             @PathVariable(value = "id", required = false) final Long id,
             @NotNull @RequestBody Customer customer
@@ -113,7 +115,6 @@ public class CustomerController {
         if (!Objects.equals(id, customer.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
-
         if (!customerRepository.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
@@ -124,7 +125,12 @@ public class CustomerController {
                     if (customer.getEmail() != null) {
                         existingCustomer.setEmail(customer.getEmail());
                     }
-
+                    if (customer.getFirstName() != null && !Objects.equals(customer.getFirstName(), existingCustomer.getFirstName())) {
+                        existingCustomer.setFirstName(customer.getFirstName());
+                    }
+                    if (customer.getLastName() != null && !Objects.equals(customer.getLastName(), existingCustomer.getLastName())) {
+                        existingCustomer.setLastName(customer.getLastName());
+                    }
                     return existingCustomer;
                 })
                 .map(customerRepository::save);

@@ -5,16 +5,12 @@ import com.shiryaeva.wyrgorod.config.PaginationUtil;
 import com.shiryaeva.wyrgorod.config.ResponseUtil;
 import com.shiryaeva.wyrgorod.exception.BadRequestAlertException;
 import com.shiryaeva.wyrgorod.model.Publisher;
-import com.shiryaeva.wyrgorod.model.Publisher;
-import com.shiryaeva.wyrgorod.repository.PublisherRepository;
 import com.shiryaeva.wyrgorod.repository.PublisherRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 

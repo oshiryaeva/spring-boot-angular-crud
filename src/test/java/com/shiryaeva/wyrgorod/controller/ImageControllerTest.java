@@ -2,6 +2,7 @@ package com.shiryaeva.wyrgorod.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shiryaeva.wyrgorod.model.Image;
+import com.shiryaeva.wyrgorod.model.Publisher;
 import com.shiryaeva.wyrgorod.repository.ImageRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,13 +22,12 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ImageController.class)
 public class ImageControllerTest {
@@ -43,7 +43,34 @@ public class ImageControllerTest {
 
     private MockitoSession session;
 
+    private static final String DEFAULT_NAME = "The times";
+    private static final String UPDATED_NAME = "Back home";
+
+    private static byte[] DEFAULT_CONTENT = new byte[0];
+
+    static {
+        try {
+            DEFAULT_CONTENT = TestUtil.convertObjectToJsonBytes("content");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private static final String CONTENT_TYPE = "image/jpeg";
+
+    /**
+     * Create an entity for this test.
+     *
+     * This is a static method, as tests for other entities might also need it,
+     * if they test an entity which requires the current entity.
+     */
+    public static Image createEntity() {
+        Image image = new Image();
+        image.setName(DEFAULT_NAME);
+        image.setContentContentType(CONTENT_TYPE);
+        image.setContent(DEFAULT_CONTENT);
+        return image;
+    }
 
     @BeforeEach
     public void beforeMethod() {

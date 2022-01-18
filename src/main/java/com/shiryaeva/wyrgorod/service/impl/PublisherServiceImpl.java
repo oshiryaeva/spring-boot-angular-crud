@@ -3,7 +3,6 @@ package com.shiryaeva.wyrgorod.service.impl;
 import com.shiryaeva.wyrgorod.model.Publisher;
 import com.shiryaeva.wyrgorod.repository.PublisherRepository;
 import com.shiryaeva.wyrgorod.service.PublisherService;
-import com.shiryaeva.wyrgorod.validator.PublisherValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,10 +19,6 @@ public class PublisherServiceImpl implements PublisherService {
     @Autowired
     private PublisherRepository publisherRepository;
 
-    @Autowired
-    private PublisherValidator publisherValidator;
-
-
     @Override
     public Page<Publisher> findAll(Pageable pageable) {
         return publisherRepository.findAll(pageable);
@@ -36,13 +31,11 @@ public class PublisherServiceImpl implements PublisherService {
 
     @Override
     public Publisher save(Publisher publisher) {
-        publisherValidator.validate(publisher);
         return publisherRepository.save(publisher);
     }
 
     @Override
     public Publisher update(Long id, Publisher request) {
-        publisherValidator.validate(request);
         Publisher existingPublisher = publisherRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         existingPublisher.setName(request.getName());
         return publisherRepository.save(existingPublisher);

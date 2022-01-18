@@ -1,6 +1,6 @@
 package com.shiryaeva.wyrgorod.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,17 +21,15 @@ public class OrderItem implements Serializable {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @JsonIgnore
-    @ManyToOne(cascade = CascadeType.DETACH, optional = false, fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @JsonIgnore
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    @JoinColumn(name = "order_id", nullable = false)
+    @ManyToOne
+    @JsonIgnoreProperties(allowSetters = true)
     private Order order;
 
 

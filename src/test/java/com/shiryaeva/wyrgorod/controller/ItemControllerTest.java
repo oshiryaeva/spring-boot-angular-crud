@@ -1,24 +1,33 @@
 package com.shiryaeva.wyrgorod.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shiryaeva.wyrgorod.IntegrationTest;
+import com.shiryaeva.wyrgorod.exception.BadRequestAlertException;
 import com.shiryaeva.wyrgorod.model.*;
+import com.shiryaeva.wyrgorod.repository.ArtistRepository;
+import com.shiryaeva.wyrgorod.repository.ImageRepository;
 import com.shiryaeva.wyrgorod.repository.ItemRepository;
+import com.shiryaeva.wyrgorod.repository.PublisherRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.mockito.MockitoSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import javax.persistence.EntityManager;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -26,197 +35,436 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(ItemController.class)
+@IntegrationTest
+@AutoConfigureMockMvc
+@WithMockUser
 public class ItemControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
-    private ItemRepository itemRepository;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    private MockitoSession session;
 
     private static final String CONTENT_TYPE = "image/jpeg";
 
+    private static final String DEFAULT_TITLE = "The Times They Are a-Changin";
+    private static final String UPDATED_TITLE = "Bringing It All Back Home";
 
+    private static final String DEFAULT_DESCRIPTION = "The album consists mostly of stark, sparsely arranged ballads concerning issues such as racism, poverty, and social change. The title track is one of Dylan's most famous; many feel that it captures the spirit of social and political upheaval that characterized the 1960s.";
+    private static final String UPDATED_DESCRIPTION = "The first half of the album features electric songs, followed by mainly acoustic songs in the second half. The album abandons the protest music of Dylan's previous records in favor of more surreal, complex lyrics.";
+
+    private static final Artist DEFAULT_ARTIST = ArtistControllerTest.createEntity();
+    private static final Artist UPDATED_ARTIST = ArtistControllerTest.createUpdatedEntity();
+    
+    private static final Publisher DEFAULT_PUBLISHER = PublisherControllerTest.createEntity();
+    private static final Publisher UPDATED_PUBLISHER = PublisherControllerTest.createUpdatedEntity();
+    
+    private static final Image DEFAULT_IMAGE = ImageControllerTest.createEntity();
+
+    private static final Medium DEFAULT_MEDIUM = Medium.CD;
+    private static final Medium UPDATED_MEDIUM = Medium.LP;
+    
+    private static final BigDecimal DEFAULT_PRICE = BigDecimal.ONE;
+    private static final BigDecimal UPDATED_PRICE = BigDecimal.TEN;
+
+    private static final String ENTITY_API_URL = "/items";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2L * Integer.MAX_VALUE));
+
+    private Item item;
+
+    @Autowired
+    private ItemRepository itemRepository;
+
+    @Autowired
+    private ArtistRepository artistRepository;
+
+    @Autowired
+    private ImageRepository imageRepository;
+
+    @Autowired
+    private PublisherRepository publisherRepository;
+
+    @Autowired
+    private EntityManager em;
+
+    @Autowired
+    private MockMvc restItemMockMvc;
+
+
+    /**
+     * Create an entity for this test.
+     *
+     * This is a static method, as tests for other entities might also need it,
+     * if they test an entity which requires the current entity.
+     */
+    public static Item createEntity() {
+        Item item = new Item();
+        item.setTitle(DEFAULT_TITLE);
+        item.setDescription(DEFAULT_DESCRIPTION);
+        item.setMedium(DEFAULT_MEDIUM);
+        item.setPrice(DEFAULT_PRICE);
+//        item.setArtist(DEFAULT_ARTIST);
+//        item.setPublisher(DEFAULT_PUBLISHER);
+//        item.setImage(DEFAULT_IMAGE);
+        return item;
+    }
+
+    /**
+     * Create an updated entity for this test.
+     *
+     * This is a static method, as tests for other entities might also need it,
+     * if they test an entity which requires the current entity.
+     */
+    public static Item createUpdatedEntity() {
+        Item item = new Item();
+//        item.setArtist(UPDATED_ARTIST);
+        item.setTitle(UPDATED_TITLE);
+        item.setDescription(UPDATED_DESCRIPTION);
+//        item.setPublisher(UPDATED_PUBLISHER);
+        item.setMedium(UPDATED_MEDIUM);
+        item.setPrice(UPDATED_PRICE);
+//        item.setImage(DEFAULT_IMAGE);
+        return item;
+    }
+    
     @BeforeEach
     public void beforeMethod() {
-        session = Mockito.mockitoSession()
-                .initMocks(this)
-                .startMocking();
-    }
-
-    @AfterEach
-    public void afterMethod() {
-        session.finishMocking();
+        item = createEntity();
     }
 
     @Test
-    public void getAllItems() throws Exception {
-        Item item = createMockItem();
-        List<Item> allItems = List.of(item);
-        given(itemRepository.findAll()).willReturn(allItems);
-        this.mockMvc.perform(get("/items")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+    @Transactional
+    void createItem() throws Exception {
+        int databaseSizeBeforeCreate = itemRepository.findAll().size();
+        // Create the Item
+        restItemMockMvc
+                .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(item)))
+                .andExpect(status().isCreated());
+
+        // Validate the Item in the database
+        List<Item> itemList = itemRepository.findAll();
+        assertThat(itemList).hasSize(databaseSizeBeforeCreate + 1);
+        Item testItem = itemList.get(itemList.size() - 1);
+        assertThat(testItem.getTitle()).isEqualTo(DEFAULT_TITLE);
+        assertThat(testItem.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
+        assertThat(testItem.getPrice()).isEqualTo(DEFAULT_PRICE);
+        assertThat(testItem.getMedium()).isEqualTo(DEFAULT_MEDIUM);
+    }
+
+    @Test
+    @Transactional
+    void createItemWithExistingId() throws Exception {
+        // Create the Item with an existing ID
+        item.setId(1L);
+
+        int databaseSizeBeforeCreate = itemRepository.findAll().size();
+
+        // An entity with an existing ID cannot be created, so this API call must fail
+        restItemMockMvc
+                .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(item)))
+                .andExpect(status().isBadRequest());
+
+        // Validate the Item in the database
+        List<Item> itemList = itemRepository.findAll();
+        assertThat(itemList).hasSize(databaseSizeBeforeCreate);
+    }
+
+    @Test
+    @Transactional
+    void checkTitleIsRequired() throws Exception {
+        int databaseSizeBeforeTest = itemRepository.findAll().size();
+        // set the field null
+        item.setTitle(null);
+
+        // Create the Item, which fails.
+
+        restItemMockMvc
+                .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(item)))
+                .andExpect(status().isBadRequest());
+
+        List<Item> itemList = itemRepository.findAll();
+        assertThat(itemList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    void getAllItems() throws Exception {
+        // Initialize the database
+        itemRepository.saveAndFlush(item);
+
+        // Get all the itemList
+        restItemMockMvc
+                .perform(get(ENTITY_API_URL + "?sort=id,desc"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(content().json(objectMapper.writeValueAsString(allItems)));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.[*].id").value(hasItem(item.getId().intValue())))
+                .andExpect(jsonPath("$.[*].title").value(hasItem(DEFAULT_TITLE)))
+                .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
+                .andExpect(jsonPath("$.[*].price").value(hasItem(DEFAULT_PRICE)));
     }
 
     @Test
-    public void getEmptyListOfItems() throws Exception {
-        List<Item> emptyList = new ArrayList<>();
-        given(itemRepository.findAll()).willReturn(emptyList);
-        this.mockMvc.perform(get("/items")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+    @Transactional
+    void getItem() throws Exception {
+        // Initialize the database
+        itemRepository.saveAndFlush(item);
+
+        // Get the item
+        restItemMockMvc
+                .perform(get(ENTITY_API_URL_ID, item.getId()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.id").value(item.getId().intValue()))
+                .andExpect(jsonPath("$.[*].title").value(hasItem(DEFAULT_TITLE)))
+                .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
+                .andExpect(jsonPath("$.[*].price").value(hasItem(DEFAULT_PRICE)));
+    }
+
+    @Test
+    @Transactional
+    void getNonExistingItem() throws Exception {
+        // Get the item
+        restItemMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
+    }
+
+    @Test
+    @Transactional
+    void putNewItem() throws Exception {
+        // Initialize the database
+        itemRepository.saveAndFlush(item);
+
+        int databaseSizeBeforeUpdate = itemRepository.findAll().size();
+
+        // Update the item
+        Item updatedItem = itemRepository.findById(item.getId()).get();
+        // Disconnect from session so that the updates on updatedItem are not directly saved in db
+        em.detach(updatedItem);
+        updatedItem.setTitle(UPDATED_TITLE);
+        updatedItem.setDescription(UPDATED_DESCRIPTION);
+        updatedItem.setPrice(UPDATED_PRICE);
+
+        restItemMockMvc
+                .perform(
+                        put(ENTITY_API_URL_ID, updatedItem.getId())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtil.convertObjectToJsonBytes(updatedItem))
+                )
+                .andExpect(status().isOk());
+
+        // Validate the Item in the database
+        List<Item> itemList = itemRepository.findAll();
+        assertThat(itemList).hasSize(databaseSizeBeforeUpdate);
+        Item testItem = itemList.get(itemList.size() - 1);
+        assertThat(testItem.getTitle()).isEqualTo(UPDATED_TITLE);
+        assertThat(testItem.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
+        assertThat(testItem.getPrice()).isEqualTo(UPDATED_PRICE);
+    }
+
+    @Test
+    @Transactional
+    void putNonExistingItem() throws Exception {
+        int databaseSizeBeforeUpdate = itemRepository.findAll().size();
+        item.setId(count.incrementAndGet());
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restItemMockMvc
+                .perform(
+                        put(ENTITY_API_URL_ID, item.getId())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtil.convertObjectToJsonBytes(item))
+                )
+                .andExpect(status().isBadRequest());
+
+        // Validate the Item in the database
+        List<Item> itemList = itemRepository.findAll();
+        assertThat(itemList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void putWithIdMismatchItem() throws Exception {
+        int databaseSizeBeforeUpdate = itemRepository.findAll().size();
+        item.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restItemMockMvc
+                .perform(
+                        put(ENTITY_API_URL_ID, count.incrementAndGet())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(TestUtil.convertObjectToJsonBytes(item))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof BadRequestAlertException));
+
+        // Validate the Item in the database
+        List<Item> itemList = itemRepository.findAll();
+        assertThat(itemList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void putWithMissingIdPathParamItem() throws Exception {
+        int databaseSizeBeforeUpdate = itemRepository.findAll().size();
+        item.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restItemMockMvc
+                .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(item)))
+                .andExpect(status().isMethodNotAllowed());
+
+        // Validate the Item in the database
+        List<Item> itemList = itemRepository.findAll();
+        assertThat(itemList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void partialUpdateItemWithPatch() throws Exception {
+        // Initialize the database
+        itemRepository.saveAndFlush(item);
+
+        int databaseSizeBeforeUpdate = itemRepository.findAll().size();
+
+        // Update the item using partial update
+        Item partialUpdatedItem = new Item();
+        partialUpdatedItem.setId(item.getId());
+
+        partialUpdatedItem.setDescription(UPDATED_DESCRIPTION);
+
+        restItemMockMvc
+                .perform(
+                        patch(ENTITY_API_URL_ID, partialUpdatedItem.getId())
+                                .contentType("application/merge-patch+json")
+                                .content(TestUtil.convertObjectToJsonBytes(partialUpdatedItem))
+                )
+                .andExpect(status().isOk());
+
+        // Validate the Item in the database
+        List<Item> itemList = itemRepository.findAll();
+        assertThat(itemList).hasSize(databaseSizeBeforeUpdate);
+        Item testItem = itemList.get(itemList.size() - 1);
+        assertThat(testItem.getTitle()).isEqualTo(DEFAULT_TITLE);
+        assertThat(testItem.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
+        assertThat(testItem.getPrice()).isEqualTo(DEFAULT_PRICE);
+    }
+
+    @Test
+    @Transactional
+    void fullUpdateItemWithPatch() throws Exception {
+        // Initialize the database
+        itemRepository.saveAndFlush(item);
+
+        int databaseSizeBeforeUpdate = itemRepository.findAll().size();
+
+        // Update the item using partial update
+        Item partialUpdatedItem = new Item();
+        partialUpdatedItem.setId(item.getId());
+
+        partialUpdatedItem.setTitle(UPDATED_TITLE);
+        partialUpdatedItem.setDescription(UPDATED_DESCRIPTION);
+        partialUpdatedItem.setPrice(UPDATED_PRICE);
+        partialUpdatedItem.setMedium(UPDATED_MEDIUM);
+        partialUpdatedItem.setArtist(UPDATED_ARTIST);
+        partialUpdatedItem.setPublisher(UPDATED_PUBLISHER);
+
+        restItemMockMvc
+                .perform(
+                        patch(ENTITY_API_URL_ID, partialUpdatedItem.getId())
+                                .contentType("application/merge-patch+json")
+                                .content(TestUtil.convertObjectToJsonBytes(partialUpdatedItem))
+                )
+                .andExpect(status().isOk());
+
+        // Validate the Item in the database
+        List<Item> itemList = itemRepository.findAll();
+        assertThat(itemList).hasSize(databaseSizeBeforeUpdate);
+        Item testItem = itemList.get(itemList.size() - 1);
+        assertThat(testItem.getTitle()).isEqualTo(UPDATED_TITLE);
+        assertThat(testItem.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
+        assertThat(testItem.getPrice()).isEqualTo(UPDATED_PRICE);
+    }
+
+    @Test
+    @Transactional
+    void patchNonExistingItem() throws Exception {
+        int databaseSizeBeforeUpdate = itemRepository.findAll().size();
+        item.setId(count.incrementAndGet());
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restItemMockMvc
+                .perform(
+                        patch(ENTITY_API_URL_ID, item.getId())
+                                .contentType("application/merge-patch+json")
+                                .content(TestUtil.convertObjectToJsonBytes(item))
+                )
+                .andExpect(status().isBadRequest());
+
+        // Validate the Item in the database
+        List<Item> itemList = itemRepository.findAll();
+        assertThat(itemList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithIdMismatchItem() throws Exception {
+        int databaseSizeBeforeUpdate = itemRepository.findAll().size();
+        item.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restItemMockMvc
+                .perform(
+                        patch(ENTITY_API_URL_ID, count.incrementAndGet())
+                                .contentType("application/merge-patch+json")
+                                .content(TestUtil.convertObjectToJsonBytes(item))
+                )
+                .andExpect(status().isBadRequest());
+
+        // Validate the Item in the database
+        List<Item> itemList = itemRepository.findAll();
+        assertThat(itemList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithMissingIdPathParamItem() throws Exception {
+        int databaseSizeBeforeUpdate = itemRepository.findAll().size();
+        item.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restItemMockMvc
+                .perform(patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(TestUtil.convertObjectToJsonBytes(item)))
+                .andExpect(status().isMethodNotAllowed());
+
+        // Validate the Item in the database
+        List<Item> itemList = itemRepository.findAll();
+        assertThat(itemList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void deleteItem() throws Exception {
+        // Initialize the database
+        itemRepository.saveAndFlush(item);
+
+        int databaseSizeBeforeDelete = itemRepository.findAll().size();
+
+        // Delete the item
+        restItemMockMvc
+                .perform(delete(ENTITY_API_URL_ID, item.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
-    }
 
-    @Test
-    public void getItemById() throws Exception {
-        Item item = createMockItem();
-        Optional<Item> itemOptional = Optional.of(item);
-        given(itemRepository.findById(item.getId())).willReturn(itemOptional);
-        this.mockMvc.perform(get("/item/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(item)));
-    }
-
-    @Test
-    public void getItemsByArtist() throws Exception {
-        Item item = createMockItem();
-        List<Item> items = List.of(item);
-        given(itemRepository.findByArtist_Id(item.getArtist().getId())).willReturn(items);
-        this.mockMvc.perform(get("/item/artist/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(items)));
-    }
-
-    @Test
-    public void getItemsByArtistName() throws Exception {
-        Item item = createMockItem();
-        List<Item> items = List.of(item);
-        given(itemRepository.findByArtist_NameIgnoreCase(item.getArtist().getName())).willReturn(items);
-        this.mockMvc.perform(get("/item/artist/name/" + item.getArtist().getName())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(items)));
-    }
-
-    @Test
-    public void getItemsByPublisher() throws Exception {
-        Item item = createMockItem();
-        List<Item> items = List.of(item);
-        given(itemRepository.findByPublisher_Id(item.getPublisher().getId())).willReturn(items);
-        this.mockMvc.perform(get("/item/publisher/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(items)));
-    }
-
-    @Test
-    public void getItemsByPublisherName() throws Exception {
-        Item item = createMockItem();
-        List<Item> items = List.of(item);
-        given(itemRepository.findByPublisher_NameIgnoreCase(item.getPublisher().getName())).willReturn(items);
-        this.mockMvc.perform(get("/item/publisher/name/" + item.getPublisher().getName())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(items)));
-    }
-
-    @Test
-    public void postNewItem() throws Exception {
-        Item item = createMockItem();
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/item")
-                        .content(objectMapper.writeValueAsString(item))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is(HttpStatus.CREATED.value()))
-                .andReturn();
-    }
-
-    @Test
-    public void updateItem() throws Exception {
-        Item item = createMockItem();
-        Optional<Item> itemOptional = Optional.of(item);
-        given(itemRepository.findById(item.getId())).willReturn(itemOptional);
-        mockMvc.perform(MockMvcRequestBuilders.put("/item/" + item.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(item))
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(item)));
-
-    }
-
-    @Test
-    public void deleteItem() throws Exception {
-        Item item = createMockItem();
-        Optional<Item> itemOptional = Optional.of(item);
-        given(itemRepository.findById(item.getId())).willReturn(itemOptional);
-        mockMvc.perform(MockMvcRequestBuilders.delete("/item/" + item.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(item))
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
-    }
-
-    private Item createMockItem() throws IOException {
-        String title = "The Velvet Underground & Nico";
-        String description = "The Velvet Underground & Nico is the debut album by American rock band the Velvet " +
-                "Underground and German singer Nico, released in March 1967 through Verve Records. It was recorded " +
-                "in 1966 while the band were featured on Andy Warhol's Exploding Plastic Inevitable tour. The album " +
-                "features experimental performance sensibilities and controversial lyrical topics, including drug abuse, " +
-                "prostitution, sadomasochism and sexual deviancy. It sold poorly and was mostly ignored by contemporary " +
-                "critics, but later became regarded as one of the most influential albums in the history of rock and pop " +
-                "music. " +
-                "All songs written by Lou Reed, except where noted." +
-                "Side 1\n" +
-                "1.\t\"Sunday Morning\"\t\n" +
-                "2.\t\"I'm Waiting for the Man\"\n" +
-                "3.\t\"Femme Fatale\"\n" +
-                "4.\t\"Venus in Furs\"\n" +
-                "5.\t\"Run Run Run\"\n" +
-                "6.\t\"All Tomorrow's Parties\"\n" +
-                "Side 2\n" +
-                "1.\t\"Heroin\"\n" +
-                "2.\t\"There She Goes Again\"\n" +
-                "3.\t\"I'll Be Your Mirror\"\n" +
-                "4.\t\"The Black Angel's Death Song\"\t\n" +
-                "5.\t\"European Son\"";
-        Artist artist = new Artist(1L, "The Velvet Underground");
-        Publisher publisher = new Publisher(1L, "Verve");
-        MultipartFile file = new MockMultipartFile("Banana", "Banana.jpg", "text/plain",
-                convertImage("/image/Velvet_Underground_and_Nico.jpg"));
-        Image image = new Image(1l, file.getName(), file.getBytes(), CONTENT_TYPE);
-        return new Item(1l, title, description, artist, publisher, BigDecimal.TEN, Medium.CD, image);
-    }
-
-    private byte[] convertImage(String path) throws IOException {
-        BufferedImage bImage = ImageIO.read(getClass().getResource(path));
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ImageIO.write(bImage, "jpg", bos);
-        return bos.toByteArray();
+        // Validate the database contains one less item
+        List<Item> itemList = itemRepository.findAll();
+        assertThat(itemList).hasSize(databaseSizeBeforeDelete - 1);
     }
 
 }

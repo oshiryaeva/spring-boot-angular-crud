@@ -14,12 +14,17 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Publisher {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "name", unique = true)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
+
+    public Publisher(String name) {
+        this.name = name;
+    }
 
 }

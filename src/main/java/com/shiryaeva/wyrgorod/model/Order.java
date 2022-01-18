@@ -1,6 +1,6 @@
 package com.shiryaeva.wyrgorod.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,9 +32,11 @@ public class Order implements Serializable {
         this.amount = calculateOrderAmount();
     }
 
-    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JsonManagedReference
+
+    @OneToMany(mappedBy = "order")
+    @JsonIgnoreProperties(value = { "order" }, allowSetters = true)
     private List<OrderItem> orderItems = new ArrayList<>();
+
 
     public void addItem(OrderItem item) {
         this.orderItems.add(item);

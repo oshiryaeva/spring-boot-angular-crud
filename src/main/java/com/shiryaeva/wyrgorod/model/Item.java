@@ -1,6 +1,5 @@
 package com.shiryaeva.wyrgorod.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,11 +30,11 @@ public class Item implements Serializable {
     @Column(name = "description")
     private String description;
 
-    @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
+    @ManyToOne(cascade = CascadeType.MERGE, optional = false)
     @JoinColumn(name = "artist_id", nullable = false)
     private Artist artist;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "publisher_id")
     private Publisher publisher;
 
@@ -46,9 +45,8 @@ public class Item implements Serializable {
     @Column(name = "medium")
     private Medium medium;
 
-    @OneToOne(orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "image_id")
-    @JsonIgnore
     private Image image;
 
 }

@@ -3,7 +3,6 @@ package com.shiryaeva.wyrgorod.service.impl;
 import com.shiryaeva.wyrgorod.model.Customer;
 import com.shiryaeva.wyrgorod.repository.CustomerRepository;
 import com.shiryaeva.wyrgorod.service.CustomerService;
-import com.shiryaeva.wyrgorod.validator.CustomerValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,10 +18,6 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     private CustomerRepository customerRepository;
-
-    @Autowired
-    private CustomerValidator customerValidator;
-
 
     @Override
     public Page<Customer> findAll(Pageable pageable) {
@@ -41,13 +36,11 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer save(Customer customer) {
-        customerValidator.validate(customer);
         return customerRepository.save(customer);
     }
 
     @Override
     public Customer update(Long id, Customer request) {
-        customerValidator.validate(request);
         Customer existingCustomer = customerRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         existingCustomer.setFirstName(request.getFirstName());
         existingCustomer.setLastName(request.getLastName());
