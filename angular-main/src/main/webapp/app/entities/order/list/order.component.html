@@ -20,6 +20,10 @@
     </div>
   </h2>
 
+  <wyrgorod-alert-error></wyrgorod-alert-error>
+
+  <wyrgorod-alert></wyrgorod-alert>
+
   <div class="alert alert-warning" id="no-result" *ngIf="orders?.length === 0">
     <span>No orders found</span>
   </div>
@@ -29,6 +33,8 @@
       <thead>
         <tr wyrgorodSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="loadPage()">
           <th scope="col" wyrgorodSortBy="id"><span>ID</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" wyrgorodSortBy="amount"><span>Amount</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" wyrgorodSortBy="customer.id"><span>Customer</span> <fa-icon icon="sort"></fa-icon></th>
           <th scope="col"></th>
         </tr>
       </thead>
@@ -36,6 +42,12 @@
         <tr *ngFor="let order of orders; trackBy: trackId" data-cy="entityTable">
           <td>
             <a [routerLink]="['/order', order.id, 'view']">{{ order.id }}</a>
+          </td>
+          <td>{{ order.amount }}</td>
+          <td>
+            <div *ngIf="order.customer">
+              <a [routerLink]="['/customer', order.customer?.id, 'view']">{{ order.customer?.id }}</a>
+            </div>
           </td>
           <td class="text-right">
             <div class="btn-group">

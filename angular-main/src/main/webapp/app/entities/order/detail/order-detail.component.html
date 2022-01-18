@@ -14,6 +14,16 @@
         <dd>
           <span>{{ order.id }}</span>
         </dd>
+        <dt><span>Amount</span></dt>
+        <dd>
+          <span>{{ order.amount }}</span>
+        </dd>
+        <dt><span>Customer</span></dt>
+        <dd>
+          <div *ngIf="order.customer">
+            <a [routerLink]="['/customer', order.customer?.id, 'view']">{{ order.customer?.id }}</a>
+          </div>
+        </dd>
       </dl>
 
       <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">

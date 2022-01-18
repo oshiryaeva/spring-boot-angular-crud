@@ -24,4 +24,8 @@ Bootstrap tweaks
     max-width: 1500px !important;
     height: 90% !important;
   }
+
+  table {
+    text-overflow: ellipsis;
+  }
 }

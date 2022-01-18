@@ -24,6 +24,12 @@
             <a [routerLink]="['/item', orderItem.item?.id, 'view']">{{ orderItem.item?.id }}</a>
           </div>
         </dd>
+        <dt><span>Order</span></dt>
+        <dd>
+          <div *ngIf="orderItem.order">
+            <a [routerLink]="['/order', orderItem.order?.id, 'view']">{{ orderItem.order?.id }}</a>
+          </div>
+        </dd>
       </dl>
 
       <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">

@@ -42,7 +42,11 @@ describe('OrderItem e2e test', () => {
 
     await orderItemComponentsPage.clickOnCreateButton();
 
-    await promise.all([orderItemUpdatePage.setQuantityInput('5'), orderItemUpdatePage.itemSelectLastOption()]);
+    await promise.all([
+      orderItemUpdatePage.setQuantityInput('5'),
+      orderItemUpdatePage.itemSelectLastOption(),
+      orderItemUpdatePage.orderSelectLastOption(),
+    ]);
 
     await orderItemUpdatePage.save();
     expect(await orderItemUpdatePage.getSaveButton().isPresent(), 'Expected save button disappear').to.be.false;

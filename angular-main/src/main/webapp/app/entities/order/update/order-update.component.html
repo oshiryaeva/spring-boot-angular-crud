@@ -1,12 +1,35 @@
 <div class="row justify-content-center">
   <div class="col-8">
     <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
-      <h2 id="wyrgorod-order-heading" data-cy="OrderCreateUpdateHeading">Create or edit a Order</h2>
+      <h2 id="wyrgorod-order-heading" data-cy="OrderCreateUpdateHeading">Create or edit an Order</h2>
 
       <div>
+        <wyrgorod-alert-error></wyrgorod-alert-error>
+
         <div class="form-group" [hidden]="editForm.get('id')!.value == null">
           <label class="form-control-label" for="field_id">ID</label>
           <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" for="field_amount">Amount</label>
+          <input type="number" class="form-control" name="amount" id="field_amount" data-cy="amount" formControlName="amount" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" for="field_customer">Customer</label>
+          <select class="form-control" id="field_customer" data-cy="customer" name="customer" formControlName="customer">
+            <option *ngIf="!editForm.get('customer')!.value" [ngValue]="null" selected></option>
+            <option
+              [ngValue]="customerOption.id === editForm.get('customer')!.value?.id ? editForm.get('customer')!.value : customerOption"
+              *ngFor="let customerOption of customersSharedCollection; trackBy: trackCustomerById"
+            >
+              {{ customerOption.id }}
+            </option>
+          </select>
+        </div>
+        <div *ngIf="editForm.get(['customer'])!.invalid && (editForm.get(['customer'])!.dirty || editForm.get(['customer'])!.touched)">
+          <small class="form-text text-danger" *ngIf="editForm.get(['customer'])?.errors?.required"> This field is required. </small>
         </div>
       </div>
 

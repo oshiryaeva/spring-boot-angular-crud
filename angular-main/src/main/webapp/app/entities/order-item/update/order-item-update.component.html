@@ -1,9 +1,11 @@
 <div class="row justify-content-center">
   <div class="col-8">
     <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
-      <h2 id="wyrgorod-order-item-heading" data-cy="OrderItemCreateUpdateHeading">Create or edit a Order Item</h2>
+      <h2 id="wyrgorod-order-item-heading" data-cy="OrderItemCreateUpdateHeading">Create or edit an Order Item</h2>
 
       <div>
+        <wyrgorod-alert-error></wyrgorod-alert-error>
+
         <div class="form-group" [hidden]="editForm.get('id')!.value == null">
           <label class="form-control-label" for="field_id">ID</label>
           <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
@@ -29,6 +31,19 @@
               *ngFor="let itemOption of itemsSharedCollection; trackBy: trackItemById"
             >
               {{ itemOption.id }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" for="field_order">Order</label>
+          <select class="form-control" id="field_order" data-cy="order" name="order" formControlName="order">
+            <option [ngValue]="null"></option>
+            <option
+              [ngValue]="orderOption.id === editForm.get('order')!.value?.id ? editForm.get('order')!.value : orderOption"
+              *ngFor="let orderOption of ordersSharedCollection; trackBy: trackOrderById"
+            >
+              {{ orderOption.id }}
             </option>
           </select>
         </div>

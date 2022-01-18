@@ -33,6 +33,7 @@ export class OrderItemUpdatePage {
   quantityInput = element(by.id('field_quantity'));
 
   itemSelect = element(by.id('field_item'));
+  orderSelect = element(by.id('field_order'));
 
   async getPageTitle(): Promise<string> {
     return this.pageTitle.getText();
@@ -68,6 +69,22 @@ export class OrderItemUpdatePage {
 
   async getItemSelectedOption(): Promise<string> {
     return await this.itemSelect.element(by.css('option:checked')).getText();
+  }
+
+  async orderSelectLastOption(): Promise<void> {
+    await this.orderSelect.all(by.tagName('option')).last().click();
+  }
+
+  async orderSelectOption(option: string): Promise<void> {
+    await this.orderSelect.sendKeys(option);
+  }
+
+  getOrderSelect(): ElementFinder {
+    return this.orderSelect;
+  }
+
+  async getOrderSelectedOption(): Promise<string> {
+    return await this.orderSelect.element(by.css('option:checked')).getText();
   }
 
   async save(): Promise<void> {

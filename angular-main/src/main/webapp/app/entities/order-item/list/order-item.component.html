@@ -20,6 +20,10 @@
     </div>
   </h2>
 
+  <wyrgorod-alert-error></wyrgorod-alert-error>
+
+  <wyrgorod-alert></wyrgorod-alert>
+
   <div class="alert alert-warning" id="no-result" *ngIf="orderItems?.length === 0">
     <span>No orderItems found</span>
   </div>
@@ -31,6 +35,7 @@
           <th scope="col" wyrgorodSortBy="id"><span>ID</span> <fa-icon icon="sort"></fa-icon></th>
           <th scope="col" wyrgorodSortBy="quantity"><span>Quantity</span> <fa-icon icon="sort"></fa-icon></th>
           <th scope="col" wyrgorodSortBy="item.id"><span>Item</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" wyrgorodSortBy="order.id"><span>Order</span> <fa-icon icon="sort"></fa-icon></th>
           <th scope="col"></th>
         </tr>
       </thead>
@@ -43,6 +48,11 @@
           <td>
             <div *ngIf="orderItem.item">
               <a [routerLink]="['/item', orderItem.item?.id, 'view']">{{ orderItem.item?.id }}</a>
+            </div>
+          </td>
+          <td>
+            <div *ngIf="orderItem.order">
+              <a [routerLink]="['/order', orderItem.order?.id, 'view']">{{ orderItem.order?.id }}</a>
             </div>
           </td>
           <td class="text-right">

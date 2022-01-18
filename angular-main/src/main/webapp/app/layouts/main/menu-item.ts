@@ -37,6 +37,11 @@ export const USER_MENU: NbMenuItem[] = [
         link: 'order',
       },
       {
+        title: 'Order Items',
+        icon: 'people-outline',
+        link: 'order-item',
+      },
+      {
         title: 'Items',
         icon: 'people-outline',
         link: 'item',

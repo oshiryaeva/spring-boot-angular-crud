@@ -9,6 +9,8 @@ import { of, Subject } from 'rxjs';
 
 import { OrderService } from '../service/order.service';
 import { IOrder, Order } from '../order.model';
+import { ICustomer } from 'app/entities/customer/customer.model';
+import { CustomerService } from 'app/entities/customer/service/customer.service';
 
 import { OrderUpdateComponent } from './order-update.component';
 
@@ -18,6 +20,7 @@ describe('Component Tests', () => {
     let fixture: ComponentFixture<OrderUpdateComponent>;
     let activatedRoute: ActivatedRoute;
     let orderService: OrderService;
+    let customerService: CustomerService;
 
     beforeEach(() => {
       TestBed.configureTestingModule({
@@ -31,18 +34,41 @@ describe('Component Tests', () => {
       fixture = TestBed.createComponent(OrderUpdateComponent);
       activatedRoute = TestBed.inject(ActivatedRoute);
       orderService = TestBed.inject(OrderService);
+      customerService = TestBed.inject(CustomerService);
 
       comp = fixture.componentInstance;
     });
 
     describe('ngOnInit', () => {
+      it('Should call Customer query and add missing value', () => {
+        const order: IOrder = { id: 456 };
+        const customer: ICustomer = { id: 90253 };
+        order.customer = customer;
+
+        const customerCollection: ICustomer[] = [{ id: 9177 }];
+        jest.spyOn(customerService, 'query').mockReturnValue(of(new HttpResponse({ body: customerCollection })));
+        const additionalCustomers = [customer];
+        const expectedCollection: ICustomer[] = [...additionalCustomers, ...customerCollection];
+        jest.spyOn(customerService, 'addCustomerToCollectionIfMissing').mockReturnValue(expectedCollection);
+
+        activatedRoute.data = of({ order });
+        comp.ngOnInit();
+
+        expect(customerService.query).toHaveBeenCalled();
+        expect(customerService.addCustomerToCollectionIfMissing).toHaveBeenCalledWith(customerCollection, ...additionalCustomers);
+        expect(comp.customersSharedCollection).toEqual(expectedCollection);
+      });
+
       it('Should update editForm', () => {
         const order: IOrder = { id: 456 };
+        const customer: ICustomer = { id: 67558 };
+        order.customer = customer;
 
         activatedRoute.data = of({ order });
         comp.ngOnInit();
 
         expect(comp.editForm.value).toEqual(expect.objectContaining(order));
+        expect(comp.customersSharedCollection).toContain(customer);
       });
     });
 
@@ -107,6 +133,16 @@ describe('Component Tests', () => {
         expect(orderService.update).toHaveBeenCalledWith(order);
         expect(comp.isSaving).toEqual(false);
         expect(comp.previousState).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('Tracking relationships identifiers', () => {
+      describe('trackCustomerById', () => {
+        it('Should return tracked Customer primary key', () => {
+          const entity = { id: 123 };
+          const trackResult = comp.trackCustomerById(0, entity);
+          expect(trackResult).toEqual(entity.id);
+        });
       });
     });
   });

@@ -30,7 +30,7 @@
         <tr wyrgorodSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="loadPage()">
           <th scope="col" wyrgorodSortBy="id"><span>ID</span> <fa-icon icon="sort"></fa-icon></th>
           <th scope="col" wyrgorodSortBy="title"><span>Title</span> <fa-icon icon="sort"></fa-icon></th>
-          <th scope="col" wyrgorodSortBy="description"><span>Description</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" wyrgorodSortBy="description"><span maxlength="50">Description</span> <fa-icon icon="sort"></fa-icon></th>
           <th scope="col" wyrgorodSortBy="price"><span>Price</span> <fa-icon icon="sort"></fa-icon></th>
           <th scope="col" wyrgorodSortBy="medium"><span>Medium</span> <fa-icon icon="sort"></fa-icon></th>
           <th scope="col" wyrgorodSortBy="artist.id"><span>Artist</span> <fa-icon icon="sort"></fa-icon></th>

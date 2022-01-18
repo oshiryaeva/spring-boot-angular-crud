@@ -34,7 +34,7 @@ module.exports = async (config, options, targetOptions) => {
         extensions: ['js', 'ts'],
       }),
       new WebpackNotifierPlugin({
-        title: 'Wyrgorod Angular',
+        title: 'Olga Angular',
         contentImage: path.join(__dirname, 'logo-jhipster.png'),
       })
     );

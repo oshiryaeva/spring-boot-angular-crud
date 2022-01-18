@@ -44,7 +44,7 @@ describe('Component Tests', () => {
     });
 
     describe('page title', () => {
-      const defaultPageTitle = 'Wyrgorod Angular';
+      const defaultPageTitle = 'Olga Angular';
       const parentRoutePageTitle = 'parentTitle';
       const childRoutePageTitle = 'childTitle';
       const navigationEnd = new NavigationEnd(1, '', '');

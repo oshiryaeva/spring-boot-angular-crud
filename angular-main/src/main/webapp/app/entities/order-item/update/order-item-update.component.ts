@@ -9,6 +9,8 @@ import { IOrderItem, OrderItem } from '../order-item.model';
 import { OrderItemService } from '../service/order-item.service';
 import { IItem } from 'app/entities/item/item.model';
 import { ItemService } from 'app/entities/item/service/item.service';
+import { IOrder } from 'app/entities/order/order.model';
+import { OrderService } from 'app/entities/order/service/order.service';
 
 @Component({
   selector: 'wyrgorod-order-item-update',
@@ -18,16 +20,19 @@ export class OrderItemUpdateComponent implements OnInit {
   isSaving = false;
 
   itemsSharedCollection: IItem[] = [];
+  ordersSharedCollection: IOrder[] = [];
 
   editForm = this.fb.group({
     id: [],
     quantity: [null, [Validators.required]],
     item: [],
+    order: [],
   });
 
   constructor(
     protected orderItemService: OrderItemService,
     protected itemService: ItemService,
+    protected orderService: OrderService,
     protected activatedRoute: ActivatedRoute,
     protected fb: FormBuilder
   ) {}
@@ -58,6 +63,10 @@ export class OrderItemUpdateComponent implements OnInit {
     return item.id!;
   }
 
+  trackOrderById(index: number, item: IOrder): number {
+    return item.id!;
+  }
+
   protected subscribeToSaveResponse(result: Observable<HttpResponse<IOrderItem>>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe(
       () => this.onSaveSuccess(),
@@ -82,9 +91,11 @@ export class OrderItemUpdateComponent implements OnInit {
       id: orderItem.id,
       quantity: orderItem.quantity,
       item: orderItem.item,
+      order: orderItem.order,
     });
 
     this.itemsSharedCollection = this.itemService.addItemToCollectionIfMissing(this.itemsSharedCollection, orderItem.item);
+    this.ordersSharedCollection = this.orderService.addOrderToCollectionIfMissing(this.ordersSharedCollection, orderItem.order);
   }
 
   protected loadRelationshipsOptions(): void {
@@ -93,6 +104,12 @@ export class OrderItemUpdateComponent implements OnInit {
       .pipe(map((res: HttpResponse<IItem[]>) => res.body ?? []))
       .pipe(map((items: IItem[]) => this.itemService.addItemToCollectionIfMissing(items, this.editForm.get('item')!.value)))
       .subscribe((items: IItem[]) => (this.itemsSharedCollection = items));
+
+    this.orderService
+      .query()
+      .pipe(map((res: HttpResponse<IOrder[]>) => res.body ?? []))
+      .pipe(map((orders: IOrder[]) => this.orderService.addOrderToCollectionIfMissing(orders, this.editForm.get('order')!.value)))
+      .subscribe((orders: IOrder[]) => (this.ordersSharedCollection = orders));
   }
 
   protected createFromForm(): IOrderItem {
@@ -101,6 +118,7 @@ export class OrderItemUpdateComponent implements OnInit {
       id: this.editForm.get(['id'])!.value,
       quantity: this.editForm.get(['quantity'])!.value,
       item: this.editForm.get(['item'])!.value,
+      order: this.editForm.get(['order'])!.value,
     };
   }
 }
