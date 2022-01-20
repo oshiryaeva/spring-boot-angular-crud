@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestTemplate;
 
-import javax.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Random;
@@ -26,9 +25,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @TestPropertySource(locations = {"classpath:application-test.properties"})
 public class CrudOnItemSteps {
-
-    @Autowired
-    private EntityManager entityManager;
 
     @Autowired
     private ArtistRepository artistRepository;
@@ -52,8 +48,8 @@ public class CrudOnItemSteps {
 
     @Given("database is empty")
     public void databaseIsEmpty() {
-//        BddHelper helper = new BddHelper();
-//        helper.cleanUpDb();
+        BddHelper helper = new BddHelper();
+        helper.cleanUpDb();
     }
 
     @Given("There is Artist {string}")
@@ -96,7 +92,6 @@ public class CrudOnItemSteps {
     @And("response body should contain title {string}")
     public void responseBodyShouldContainTitle(String title) {
         Assertions.assertEquals(title, Objects.requireNonNull(responseEntity.getBody()).getTitle());
-
     }
 
     @And("response body should contain description {string}")
